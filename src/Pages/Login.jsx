@@ -1,14 +1,24 @@
 import axios from "axios";
 import { notification } from "antd";
 import { EyeOutlined, EyeInvisibleOutlined } from "@ant-design/icons";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { GetLocalStorage, setLocalStorage } from "../Common/Localstorage";
 
-const Login = () => {
+
+// console.log(message)
+const Login = (props) => {
   const [flag, setFlag] = useState(true);
   const Navigate = useNavigate();
   const eopen = useRef();
   console.log(eopen);
+  console.log(props)
+
+
+
+    const message = GetLocalStorage("Message")
+      
+    
   //==================form submit handeler===================
   const formSubmitHandeler = (event) => {
     event.preventDefault();
@@ -23,8 +33,10 @@ const Login = () => {
         console.log(res);
         console.log(res.data.token);
         if (res.data.token === "QpwL5tke4Pnpja7X4") {
+          console.log(Object.keys(res.data))
+          setLocalStorage(Object.keys(res.data),res.data.token)
           openNotificationWithIcon("success", "Login Sucessfull");
-          Navigate("/dashboard");
+          Navigate("/dashboard?page=1");
         }
       })
       .catch((err) => {
@@ -41,9 +53,12 @@ const Login = () => {
   function togglePassword(event) {
     setFlag(!flag);
   }
+
+
   return (
     <>
       <div className="w-full max-w-xs mx-auto  mt-40">
+        {message?openNotificationWithIcon("warning",message):<></>}
         <form
           className="bg-slate-100 shadow-md rounded px-8 pt-6 pb-8 mb-4"
           onSubmit={formSubmitHandeler}

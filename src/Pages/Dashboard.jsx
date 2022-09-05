@@ -4,14 +4,29 @@ import { Space, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import Card from "../Components/Card";
 import Navbar from "../Components/Navbar";
-import { GetLocalStorage, setLocalStorage } from "../Common/Localstorage";
+import {
+  Link,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 const Dashboard = () => {
+  // ++++++++++++URL SEARCH PARAMS+++++++++++++++
+  // const params = useSearchParams()
+  // const {ParamKeyValuePair,closure} = useSearchParams()
+  // console.log(params)
+  // console.log(params[1].scopes)
+  //======================================================
+
   const [users, setUsers] = useState([]);
   const [searchStr, setSearchStr] = useState([]);
   const [displayData, setDisplayData] = useState(null);
   const [flag, setFlag] = useState(false);
+  const params = useLocation();
+  console.log(params.search);
+
   useEffect(() => {
-    axios.get("https://reqres.in/api/users").then((res) => {
+    axios.get("https://reqres.in/api/users" + params.search).then((res) => {
       console.log("response res", res);
       console.log("gfgg", res.data.data);
       //  { const status = setLocalStorage("response", res.data.data);
@@ -19,11 +34,13 @@ const Dashboard = () => {
       //   const usersdata = GetLocalStorage("response");
       //   // console.log(JSON.parse(usersdata))
       //   setUsers(JSON.parse(usersdata));}
+      // setFlag(false)
+      console.log(res);
       setUsers(res.data.data);
       setDisplayData(res.data.data);
       setFlag(true);
     });
-  }, []);
+  }, [params]);
 
   const getstate = (e) => {
     setSearchStr(e);
@@ -52,9 +69,11 @@ const Dashboard = () => {
       <div className="mx-[10%]">
         {flag ? (
           <div className="grid  lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 mt-16">
-            {displayData.map((elem) => (
-              <Card data={elem} key={elem.id}></Card>
-            ))}
+            {displayData ? (
+              displayData.map((elem) => <Card data={elem} key={elem.id}></Card>)
+            ) : (
+              <p>loading</p>
+            )}
           </div>
         ) : (
           <div className="flex justify-center items-center mt-48">
@@ -63,6 +82,8 @@ const Dashboard = () => {
             </Space>
           </div>
         )}
+        <Link to="/dashboard?page=1">Page1</Link> |{" "}
+        <Link to="/dashboard?page=2">Page2</Link>
       </div>
     </div>
   );
